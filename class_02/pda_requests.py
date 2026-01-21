@@ -1,5 +1,7 @@
 import requests
 import time
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 
 
 class PaoDeAcucarAPI:
@@ -22,6 +24,15 @@ class PaoDeAcucarAPI:
             "terms": self.term,
             "userHash": "8a6dbb31a71601f820552289a0a8e2c194322a99c905146918a11569c4c8f1ee",
         }
+        self.session = self._config_session()
+
+    def _config_session(self):
+        retry = Retry(total=3, status_forcelist=[429, 403, 500, 502, 503, 504])
+        adapter = HTTPAdapter(max_retries=retry)
+        session = requests.Session()
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+        return session
 
     def fetch_products(self):
         all_products = []
@@ -30,7 +41,7 @@ class PaoDeAcucarAPI:
             payload = self.base_payload.copy()
             payload["page"] = page
             payload["terms"] = self.term
-            response = requests.post(self.url, headers=self.headers, json=payload)
+            response = self.session.post(self.url, headers=self.headers, json=payload)
             response.raise_for_status()
             data = response.json()
             products = data.get("products", [])
