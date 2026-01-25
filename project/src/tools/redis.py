@@ -9,7 +9,7 @@ class RedisClient:
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(RedisClient, cls).__new__(cls, *args, **kwargs)
-            cls._instance._redis_client = cls._instance.connect_to_redis()
+            cls._instance._redis_client = cls._instance._connect_to_redis()
         return cls._instance
 
     @staticmethod

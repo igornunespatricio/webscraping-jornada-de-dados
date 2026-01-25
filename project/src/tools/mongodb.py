@@ -26,7 +26,7 @@ class MongoConnection:
             self._connect()
 
     def _connect(self):
-        self._client = MongoClient(self.host, self.port)
+        self._client = MongoClient(self.host, int(self.port))
         self._db = self._client[self.database_name]
         self._collection = self._db[self.collection]
 

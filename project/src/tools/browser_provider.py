@@ -1,5 +1,8 @@
 import os
 from selenium import webdriver
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class BrowserProvider:
@@ -13,6 +16,7 @@ class BrowserProvider:
         self.set_options(new_args)
         self.is_headless(headless)
         self.browser = webdriver.Chrome(options=self.options)
+        return self.browser
 
     def set_options(self, args):
         if args:
@@ -23,8 +27,8 @@ class BrowserProvider:
         pass
 
     def is_headless(self, headless: bool):
-        n_headless = os.getenv("HEADLESS")
-        if n_headless is None or headless:
+        n_headless = False if os.getenv("HEADLESS") == "False" else True
+        if n_headless is None:
             self.options.add_argument("--headless")
 
     def default_args(self):
